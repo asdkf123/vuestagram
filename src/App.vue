@@ -3,30 +3,80 @@
     <ul class="header-button-left">
       <li>Cancel</li>
     </ul>
-    <ul class="header-button-right">
-      <li>Next</li>
+    <ul class="header-button-right" >
+      <li v-if="step === 1" @click="step++;">Next</li>
+      <li v-if="step === 2" @click="publish">발행</li>
     </ul>
     <img src="./assets/logo.png" class="logo" />
   </div>
 
-  <PostContainer />
+  <PostContainer :instagramData="instagramData"
+                 :step="step"
+                 :uploadedImage="uploadedImage"
+                 @wroteMessage="changeContent"
+  />
 
   <div class="footer">
     <ul class="footer-button-plus">
-      <input type="file" id="file" class="inputfile" />
+      <input @change="uploadFile" type="file" id="file" class="inputfile" />
       <label for="file" class="input-plus">+</label>
     </ul>
   </div>
+  <button @click="loadMorePost">더보기</button>
 </template>
 
 <script>
 
 import PostContainer from "@/components/PostContainer.vue";
+import instagramData from "@/assets/postData";
+import axios from "axios";
 
 export default {
   name: 'App',
   components: {
     PostContainer,
+  },
+  data() {
+    return {
+      instagramData,
+      step: 0,
+      clickCount: 0,
+      uploadedImage:'',
+      wroteMessage: '',
+    };
+  },
+  methods: {
+    loadMorePost() {
+      axios.get(`https://codingapple1.github.io/vue/more${this.clickCount}.json`).then((res) => {
+        this.instagramData = this.instagramData.concat(res.data);
+        this.clickCount++;
+      });
+    },
+    uploadFile(e) {
+        let file = e.target.files;
+        console.log(file);
+        let url = URL.createObjectURL(file[0]);
+        console.log(url);
+        this.step++;
+        this.uploadedImage = url;
+    },
+    publish() {
+      let newPost = {
+        name: "lodi",
+        userImage: "https://placeimg.com/100/100/arch",
+        postImage: this.uploadedImage,
+        likes: 0,
+        date: "May 15",
+        liked: false,
+        content: this.wroteMessage,
+        filter: "perpetua"
+      }
+      this.instagramData.unshift(newPost);
+      this.step = 0;
+    },
+    changeContent(content) {
+      this.wroteMessage = content;
+    }
   }
 }
 </script>
