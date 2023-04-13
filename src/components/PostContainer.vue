@@ -10,11 +10,9 @@
     <div class="upload-image"
          :style="`background-image:url(${uploadedImage})`"></div>
     <div class="filters">
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
+      <filter-box v-for="(value, i) in instagramFilter" :key="i"
+              :uploadedImage="uploadedImage"
+                  :class="value">{{ value }}</filter-box>
     </div>
   </div>
 
@@ -31,15 +29,24 @@
 
 <script>
 import PostDocument from "@/components/PostDocument.vue";
+import FilterBox from "@/components/FilterBox.vue";
+import instagramFilter from "@/assets/instagramFilter";
 
 export default {
-  name: "PostContainer",
-  components: {PostDocument},
-    props: {
-    instagramData: Array,
-    step: Number,
-    uploadedImage: String,
-  },
+    name: "PostContainer",
+    components: {
+        FilterBox, PostDocument
+    },
+        props: {
+        instagramData: Array,
+        step: Number,
+        uploadedImage: String,
+    },
+    data() {
+        return {
+            instagramFilter,
+        }
+    },
 }
 </script>
 
